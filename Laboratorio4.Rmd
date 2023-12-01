@@ -1,5 +1,5 @@
 ---
-title: "Laboratorio 4 USFQ"
+title: "Laboratorio 4"
 author: "Jose Emilio"
 date: "2023-09-30"
 output: html_document
