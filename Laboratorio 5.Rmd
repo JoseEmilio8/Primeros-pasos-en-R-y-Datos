@@ -1,0 +1,211 @@
+---
+title: "Laboratorio 5"
+author: "Jose Emilio Vásconez"
+date: "2023-11-07"
+output: html_document
+---
+
+
+Vamos a hacer un laboratorio sencillo sobre la teoría de la regresión lineal que vimos en clases. La primera parte solo es código para que lo corran y vean los resultados. La segunda parte será su interpretación y tendrán que hacer código sencillo. 
+
+
+Primer modelo de regresión con la relación entre las variables "probabilidad de tener cáncer" y "edad". Como pueden ver, hice una base con datos que permiten establecer una relación directa entre la edad y el aumento de probabilida de cáncer. El código tiene la creación de la data, el modelo de regresión lineal con la función (lm), acompañado del símbolo (~). Ese símbolo me dice que quiero establecer una relación en un modelo entre esas dos variables. 
+
+```{r}
+
+
+set.seed(123) 
+Edad <- 1:50
+Cancer <- 2 * Edad + rnorm(50, mean = 0, sd = 10) 
+data <- data.frame(Edad, Cancer)
+print(data)
+modelo_Ejemplo <- lm(Cancer ~ Edad, data = data)
+summary(modelo_Ejemplo)
+
+
+plot(Cancer ~ Edad, data = data, main = "Regresión Lineal Simple", xlab = "Edad", ylab = "Probabilidad de Cancer")
+abline(model, col = "blue")
+
+
+```
+
+
+
+Les puse este gráfico interactivo con los mismos datos, por si les interesa hacer gráficos más chéveres en sus presentaciones futuras. 
+
+```{r}
+
+
+library(plotly)
+
+plot_ly(data, x = ~x, y = ~y, type = 'scatter', mode = 'markers', marker = list(color = 'blue')) %>%
+  add_lines(y = ~fitted(model), line = list(color = 'red')) %>%
+  layout(title = "Regresión Lineal Interactiva", xaxis = list(title = "Variable Independiente"), yaxis = list(title = "Variable Dependiente"))
+
+
+```
+
+
+
+Ahora, otro modelo, con una regresión lineal entre el gasto en publicidad y las ventas. Mayor gasto en publicidad equivale a más ventas???? Pueden verlo cuando corran el código. 
+
+```{r}
+
+set.seed(123)
+gasto_publicidad <- rnorm(100, mean = 50, sd = 15)
+ventas <- 30 + 0.5 * gasto_publicidad + rnorm(100, mean = 0, sd = 10)
+
+data_marketing <- data.frame(gasto_publicidad, ventas)
+
+model_marketing <- lm(ventas ~ gasto_publicidad, data = data_marketing)
+
+summary(model_marketing)
+
+plot(ventas ~ gasto_publicidad, data = data_marketing, main = "Regresión Lineal en Marketing", xlab = "Gasto en Publicidad", ylab = "Ventas")
+abline(model_marketing, col = "red")
+
+```
+
+
+
+Ahora lo mismo, para la relación entre el índice económico y el rendimiento de acciones en una empresa. Aquí si se van a sorprender mucho. Hice una base especialmente para generar una relación bastante extraña. Si se animan a comentar, pueden hacerlo aquí abajo: 
+
+Comenten aquí, si es que quieren. No es parte de la calificación del laboratorio. 
+
+```{r}
+
+set.seed(456)
+indice_economico <- rnorm(100, mean = -2, sd = 1)
+rendimiento_acciones <- -6  * indice_economico + rnorm(100, mean = 0, sd = 2)
+data_finanzas <- data.frame(indice_economico, rendimiento_acciones)
+model_finanzas <- lm(rendimiento_acciones ~ indice_economico, data = data_finanzas)
+summary(model_finanzas)
+plot(rendimiento_acciones ~ indice_economico, data = data_finanzas, main = "Regresión Lineal en Finanzas", xlab = "Índice Económico", ylab = "Rendimiento de Acciones")
+abline(model_finanzas, col = "red")  
+
+
+```
+
+
+
+
+Bueno. Les toca hacer e interpretar a ustedes. 
+
+
+Primero, voy a crear una base de datos para que puedan jugar: 
+
+```{r}
+
+library(MASS)
+
+n <- 100
+
+cov_matrix <- matrix(c(1, 0.7, -0.5, 0.4, 0.2,
+                      0.7, 1, -0.3, 0.2, 0.1,
+                      -0.5, -0.3, 1, -0.1, -0.4,
+                      0.4, 0.2, -0.1, 1, 0.5,
+                      0.2, 0.1, -0.4, 0.5, 1), ncol = 5)
+
+
+datas <- mvrnorm(n, mu = c(5000, 15000, 7000, 2000, 5000), Sigma = cov_matrix)
+
+Base_MKT <- as.data.frame(datas)
+colnames(Base_MKT) <- c("Gastos_Marketing", "Ventas", "Beneficio", "Inversion_Red_Social", "Ingresos_Publicidad_Online")
+
+```
+
+
+Ahora, pueden imprimir la base, para que vean lo que tenemos: 
+
+```{r}
+
+print(Base_MKT)
+
+```
+
+Para que no se olviden, pueden darme características de la base de datos?? También, hagan algunas operaciones y gráficos con las variables. Recuerden que todas son numéricas con la finalidad de hacer nuestras regresiones lineales. 
+
+```{r}
+
+
+#Hagan todo lo que puedan/quieran. Recuerden el mensaje a García. Usen todo lo que hemos aprendido. 
+
+
+
+```
+
+
+
+Ahora sí, vamos a hacer las regresiones lineales. 
+
+
+Primero, quisiera ver las correlaciones entre las variables: Pueden hacerlo e interpretarlo?? Recuerden que podemos usar la función (cor). Yo les ayudo con la primera. Hagan un par más, y díganme el tipo de correlación que existe entre las variables. 
+
+
+```{r}
+
+cor(Base_MKT$Gastos_Marketing, Base_MKT$Ventas)
+
+```
+
+
+Qué tipo de correlación encontraron??? Pueden explicar y poner su interpretación? Quisieran dibujarlo??? 
+
+
+**Escriban aquí su respuesta.**
+
+
+
+Ahora vamos a hacer un primer modelo. Quisiera que usen los ejemplos que hice arriba y hagan un primer modelo llamado ModeloVenMark con una regresión lineal entre las variables Ventas (variable dependiente) y Gastos_Marketing (variable independiente). Qué encontraron en el modelo?? Cómo lo interpretan?? Hagan un gráfico o un gráfico interactivo como los que les puse arriba. Qué me quiere decir el R cuadrado del modelo?? Respondan a todo esto en uno o dos párrafos abajo del chunk. 
+
+```{r}
+
+
+
+
+```
+
+
+
+Ahora hagan lo mismo, usando como variable dependiente otra vez a "Ventas", pero la variable independiente ahora será Beneficio. No olviden de hacer uno o dos párrafos con la interpretación. 
+
+```{r}
+
+
+
+```
+
+
+Ahora, hagan DOS MODELOS MÁS usando dos variables que consideren puedan indicarnos un resultado para la empresa. No olviden de hacer uno o dos párrafos con la interpretación. 
+
+```{r}
+
+
+
+```
+
+
+Ahora, usen esta maravillosa función para poder poner en una sola tabla todos los resultados de sus modelos: 
+
+```{r}
+
+library(stargazer)
+
+stargazer()
+
+```
+
+
+Finalmente, escriban un párrafo en el que puedan concluir cuál es su mejor modelo. Luego, escriban cuatro decisiones que puede tomar la empresa a partir de sus modelos de regresión lineal. 
+
+
+
+
+
+
+
+
+
+
+
+

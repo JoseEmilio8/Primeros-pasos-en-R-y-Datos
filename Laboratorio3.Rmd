@@ -1,0 +1,82 @@
+---
+title: "Laboratorio 3"
+author: "Su nombre"
+date: "2023-09-19"
+output: html_document
+---
+
+# En este laboratorio tienen que realizar 4 gráficos sencillos. Un Histograma, un diagrama de caja (Boxplot), un diagrama de barras, y un gráfico de línea. Acuérdense que cada uno tiene sus propias características. En cada uno de los gráficos quiero que agreguen una pequeña descripción de: a) por qué escogieron ese gráfico para esos datos, b) qué nos está diciendo el gráfico, y lo más importante. c) Qué NO NOS ESTÁ diciendo el gráfico. 
+
+
+# Pueden usar las bases de datos que están en las librerías de R. (Pueden googlear sobre todas las bases existentes)
+# Pueden bajarse bases de datos sencillas de esta página: https://www.kaggle.com/code/rtatman/fun-beginner-friendly-datasets
+
+# Pueden bajarse bases de datos sencillas de esta otra oágina: https://baryon.be/small-datasets-to-practice-data-visualization-skills/
+
+
+
+# Recuerden que no importa si usan una base diferente para cada gráfico. Recuerden que tienen que describir algo interesante de la realidad detrás de esos datos. No voy a aceptar gráficos con conclusiones sin sentido. 
+
+Nos vemos el jueves, con los que quieran hacer el laboratorio 3 en la clase
+
+
+
+# Gráfico de barras
+
+```{r}
+
+
+```
+
+1. Por qué escogieron el gráfico?
+2. Qué nos dice el gráfico?
+3. Qué no nos dice el gráfico?
+
+
+
+
+# Boxplot 
+
+```{r}
+
+
+
+```
+
+1. Por qué escogieron el gráfico?
+2. Qué nos dice el gráfico?
+3. Qué no nos dice el gráfico?
+
+
+
+# Gráfico de Línea
+
+```{r}
+
+
+```
+
+1. Por qué escogieron el gráfico?
+2. Qué nos dice el gráfico?
+3. Qué no nos dice el gráfico?
+
+
+
+# Histograma
+
+```{r}
+
+
+
+
+```
+
+1. Por qué escogieron el gráfico?
+2. Qué nos dice el gráfico?
+3. Qué no nos dice el gráfico?
+
+
+
+
+
+

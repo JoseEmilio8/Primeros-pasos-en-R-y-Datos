@@ -1,0 +1,698 @@
+---
+title: "Laboratorio 4 USFQ"
+author: "Jose Emilio"
+date: "2023-09-30"
+output: html_document
+---
+
+Vamos a utilizar el concepto sencillo de probabilidad para analizar los efectos de una campaña de MKT en la USFQ. La primera parte del laboratorio será para que ustedes corran el código. La segunda parte será su trabajo en grupo. 
+
+
+Pero antes, algunas aclaraciones de la clase anterior: 
+
+Media aritmética y media geométrica: 
+
+```{r}
+
+Invento <- c(212, 54, 35, 78, 45)
+
+media_aritmetica_Clase <- mean(Invento)
+media_aritmetica_Clase
+
+```
+
+```{r}
+
+
+tasas_PIB <- c(1.10, 1.05, 1.02)
+
+
+media_geometrica <- prod(tasas_PIB)^(1/length(tasas_PIB))
+media_geometrica
+
+```
+
+
+
+
+Empezamos con el Laboratorio 4: 
+
+
+Vamos a realizar una simulación con dos resultados posibles: Compra o no compra. Qué tan probable es que suceda? 
+
+Aquí vamos a utilizar la función rbinom que genera números aleatorios siguiendo una distribución binomial. La distribución binomial es útil cuando estamos tratando con eventos que tienen dos resultados posibles, como en este caso, compra o no compra.
+
+100: Esto indica que queremos realizar la simulación para 100 visitantes del sitio web.
+size = 1: Esto significa que estamos considerando una sola "prueba" para cada visitante, es decir, si realiza o no una compra en una visita.
+prob = probabilidad_compra: Aquí estamos utilizando la probabilidad de compra que definimos anteriormente.
+El resultado de esta línea de código es un vector llamado compras que contiene 100 valores, donde cada valor representa si un visitante realizó una compra (1) o no (0) en una visita en particular.
+
+
+```{r}
+
+# Primera Simulación 
+
+probabilidad_compra <- 0.20
+compras <- rbinom(100, size = 1, prob = probabilidad_compra)
+proporcion_compras <- mean(compras)
+print(proporcion_compras)
+print(compras)
+
+```
+
+
+
+Ahora, vamos a simular una campaña de marketing en línea con tres etapas: hacer clic en un anuncio, registrarse después de hacer clic y realizar una compra después de registrarse. Las probabilidades de éxito en cada etapa se configuran al comienzo del código.
+
+Luego, vamos a realizar un bucle para cada usuario inicial (en este caso, 1000 usuarios) y determinamos si hacen clic en un anuncio, se registran y realizan una compra en función de las probabilidades establecidas.
+
+Finalmente, calculamos estadísticas finales, como el número total de usuarios en cada etapa y mostramos los resultados en la consola.
+
+Pero antes, necesitamos las probabilidades: 
+
+Cuando se encuentren en la situación de iniciar una campaña desde cero y careces de datos históricos para estimar las probabilidades, existen diversas estrategias que van a poder emplear para determinar las probabilidades iniciales (MKT 101). Algunas de estas estrategias incluyen investigar el mercado y consultar benchmarks relevantes, lo que implica analizar campañas similares en tu industria para obtener estadísticas y tasas de conversión típicas que puedan servir como punto de partida. Otra opción es realizar experimentos controlados antes de lanzar la campaña completa, como una versión piloto para medir tasas de conversión en una muestra inicial de usuarios.
+
+También podrían recopilar información directamente de la audiencia mediante encuestas y entrevistas (Grupos focales), lo que les proporcionará conocimientos valiosos sobre su comportamiento y expectativas. En caso de no contar con datos específicos, es recomendable iniciar con estimaciones conservadoras, asumiendo tasas de conversión relativamente bajas al principio y ajustarlas a medida que obtengas datos reales. Una vez que la campaña esté en marcha, es fundamental realizar un seguimiento constante y análisis de las tasas de conversión reales, permitiendo ajustar las estimaciones iniciales basándose en datos concretos.
+
+Si la industria cuenta con benchmarks ampliamente aceptados, se los puede utilizar como referencia para estimar probabilidades. Consultar fuentes de la industria o asociaciones relevantes puede brindarles información sobre estas tasas de conversión estándar. Finalmente, si tienen acceso a datos de campañas anteriores o datos similares, pueden explorar el uso de técnicas de aprendizaje automático para modelar y predecir tasas de conversión en función de datos históricos.
+
+Recuerden que las probabilidades iniciales son estimaciones y deben estar dispuestas a ser ajustadas conforme se obtengan datos reales de la campaña en desarrollo.
+
+
+
+Como no tenemos las probabilidades, podemos simular en R. 
+
+```{r}
+
+# Crear un conjunto de datos ficticio de visitantes
+set.seed(123)  # Para reproducibilidad
+num_visitantes <- 1000
+
+# Simulación de comportamiento de los visitantes
+visitas <- rbinom(num_visitantes, size = 1, prob = 0.8)  # Simulación de visitas al sitio web (clics)
+registros <- rbinom(num_visitantes, size = 1, prob = 0.3)  # Simulación de registros
+inscripciones <- rbinom(num_visitantes, size = 1, prob = 0.2)  # Simulación de inscripciones
+
+# Calcular probabilidades basadas en el comportamiento simulado
+probabilidad_visita_sitio <- mean(visitas)
+probabilidad_registro <- mean(registros)
+probabilidad_inscripcion <- mean(inscripciones)
+
+# Imprimir las probabilidades calculadas
+cat("Probabilidad de visita al sitio web:", probabilidad_visita_sitio, "\n")
+cat("Probabilidad de registro después de visitar el sitio:", probabilidad_registro, "\n")
+cat("Probabilidad de inscripción después de registrarse:", probabilidad_inscripcion, "\n")
+```
+
+
+Ahora vamos a calcular los resultados de nuestra campaña, en base a nuestras probabilidades, con algunos # de visitantes. 
+
+
+```{r}
+
+
+probabilidad_visita_sitio <- 0.802  # Probabilidad de visitar el sitio web de la USFQ
+probabilidad_registro <- 0.297      # Probabilidad de registrarse después de visitar el sitio U
+probabilidad_inscripcion <- 0.197   # Probabilidad de inscribirse después de registrarse en la U
+
+```
+
+
+
+```{r}
+
+visitantes_iniciales <- 40000
+
+# Inicializar contadores para cada etapa
+visitas <- rep(0, visitantes_iniciales)
+registros <- rep(0, visitantes_iniciales)
+inscripciones <- rep(0, visitantes_iniciales)
+
+# Simulación de la campaña
+for (visitante in 1:visitantes_iniciales) {
+  # Etapa 1: Visitar el sitio web de la USFQ
+  if (runif(1) <= probabilidad_visita_sitio) {
+    visitas[visitante] <- 1
+    
+    # Etapa 2: Registro después de visitar el sitio
+    if (runif(1) <= probabilidad_registro) {
+      registros[visitante] <- 1
+      
+      # Etapa 3: Inscripción después de registrarse
+      if (runif(1) <= probabilidad_inscripcion) {
+        inscripciones[visitante] <- 1
+      }
+    }
+  }
+}
+
+# Calcular estadísticas finales
+total_visitas <- sum(visitas)
+total_registros <- sum(registros)
+total_inscripciones <- sum(inscripciones)
+
+# Imprimir resultados
+cat("Número total de visitantes iniciales al sitio web de la USFQ:", visitantes_iniciales, "\n")
+cat("Número de visitantes que visitaron el sitio web de la campana:", total_visitas, "\n")
+cat("Número de visitantes que se registraron después de visitar el sitio:", total_registros, "\n")
+cat("Número de visitantes que se inscribieron después de registrarse:", total_inscripciones, "\n")
+
+
+```
+
+
+1.- Quisiera que copien el código en un chunk, y cambien las probabilidades, de acuerdo a su reflexión y conocimiento, con otra campaña. Respondan a las siguientes preguntas: 
+
+a) Cuántas personas visitaron el sitio?
+b) Cuántas se registraron? 
+c) Cuántas se inscribieron? 
+
+```{r}
+
+visitantes_iniciales <- 500
+
+# Inicializar contadores para cada etapa
+visitas <- rep(0, visitantes_iniciales)
+registros <- rep(0, visitantes_iniciales)
+inscripciones <- rep(0, visitantes_iniciales)
+
+# Simulación de la campaña
+for (visitante in 1:visitantes_iniciales) {
+  # Etapa 1: Visitar el sitio web de la USFQ
+  if (runif(1) <= 0.90) {
+    visitas[visitante] <- 1
+    
+    # Etapa 2: Registro después de visitar el sitio
+    if (runif(1) <= 0.5) {
+      registros[visitante] <- 1
+      
+      # Etapa 3: Inscripción después de registrarse
+      if (runif(1) <= 0.1) {
+        inscripciones[visitante] <- 1
+      }
+    }
+  }
+}
+
+# Calcular estadísticas finales
+total_visitas <- sum(visitas)
+total_registros <- sum(registros)
+total_inscripciones <- sum(inscripciones)
+
+# Imprimir resultados
+cat("Número total de visitantes iniciales al sitio web de la USFQ:", visitantes_iniciales, "\n")
+cat("Número de visitantes que visitaron el sitio web de la campana:", total_visitas, "\n")
+cat("Número de visitantes que se registraron después de visitar el sitio:", total_registros, "\n")
+cat("Número de visitantes que se inscribieron después de registrarse:", total_inscripciones, "\n")
+
+
+
+```
+
+
+
+
+
+Ahora, vamos a calcular la probabilidad acumulativa de cada etapa de la campaña. Es decir, la probabilidad de que un visitante visite el sitio, se registre y se inscriba. ¿Cómo se relacionan estas probabilidades acumulativas con las probabilidades individuales de cada etapa?
+
+```{r}
+
+
+probabilidad_acum_visita <- probabilidad_visita_sitio
+probabilidad_acum_registro <- probabilidad_acum_visita * probabilidad_registro
+probabilidad_acum_inscripcion <- probabilidad_acum_registro * probabilidad_inscripcion
+
+cat("Probabilidad acumulativa de visita:", probabilidad_acum_visita, "\n")
+cat("Probabilidad acumulativa de registro:", probabilidad_acum_registro, "\n")
+cat("Probabilidad acumulativa de inscripción:", probabilidad_acum_inscripcion, "\n")
+
+```
+
+Respuesta: 
+
+
+
+
+
+
+
+
+Ahora, vamos a hacer unos cuantos histogramas
+
+```{r}
+
+# Crear un histograma de visitantes
+hist(visitas, main = "Distribución de Visitantes", xlab = "Número de Visitantes", col = "lightblue")
+
+# Crear un histograma de registros
+hist(registros, main = "Distribución de Registros", xlab = "Número de Registros", col = "lightgreen")
+
+# Crear un histograma de inscripciones
+hist(inscripciones, main = "Distribución de Inscripciones", xlab = "Número de Inscripciones", col = "lightpink")
+
+
+```
+
+
+
+Aunque esos histogramas chimbos no nos dicen mucho, podemos hacer gráficos de barras. Recuerden que debemos tomar los mejores gráficos para nuestros resultados, y no solo hacer por hacer (POR DIOS RECUERDEN ESTO). Quizás, este nos diga algo más??? Qué creen? Qué nos dice el gráfico?
+
+```{r}
+
+# Crear un gráfico de barras de las etapas de la campaña
+etapas <- c("Visitas", "Registros", "Inscripciones")
+cantidad <- c(total_visitas, total_registros, total_inscripciones)
+
+barplot(cantidad, names.arg = etapas, col = "lightblue", main = "Cantidad en Cada Etapa de la Campaña")
+
+```
+
+Respuesta: 
+
+
+
+
+
+
+
+
+
+Y también, podemos hacer tasas de conversión. En MKT, nuestros jefes nos van a pedir mucho sobre esto. Es una regla de tres sencilla, que podemos ponerla en R para tener nuestros resultados. Pueden describir los resultados en este ejemplo de la USFQ??
+
+```{r}
+
+# Calcular tasas de conversión
+tasa_conversion_visita_registro <- total_registros / total_visitas
+tasa_conversion_registro_inscripcion <- total_inscripciones / total_registros
+
+cat("Tasa de conversión de visita a registro:", tasa_conversion_visita_registro, "\n")
+cat("Tasa de conversión de registro a inscripción:", tasa_conversion_registro_inscripcion, "\n")
+
+
+```
+
+2.- Hagan tasas de conversión para el ejemplo que usaron en la pregunta 1. Qué les dicen los resultados?
+
+```{r}
+
+
+```
+
+
+
+
+
+
+
+
+
+Ahora, vamos a simular escenarios que no existen, para tener más clara la probabilidad de que la campaña tenga éxito: 
+
+Pruebas de escenarios:
+
+El A/B testing es una técnica de experimentación en la que se comparan dos versiones (A y B) de un elemento, como un sitio web o una campaña de marketing, para determinar cuál es más efectiva en función de métricas específicas. Se basa en la hipótesis nula y alternativa, utiliza una división aleatoria de usuarios, selecciona métricas objetivas, requiere un tamaño de muestra adecuado, controla variables y emplea análisis estadístico para tomar decisiones informadas. El objetivo es mejorar la toma de decisiones y optimizar estrategias a través de la experimentación basada en datos.
+
+```{r}
+
+# Configuración de probabilidades (mismas probabilidades para ambos grupos)
+probabilidad_visita_sitio <- 0.10
+probabilidad_registro <- 0.15
+probabilidad_inscripcion <- 0.08
+
+# Número de usuarios en cada grupo
+usuarios_grupo_A <- 5000
+usuarios_grupo_B <- 5000
+
+# Inicializar contadores para cada grupo
+visitas_grupo_A <- rep(0, usuarios_grupo_A)
+registros_grupo_A <- rep(0, usuarios_grupo_A)
+inscripciones_grupo_A <- rep(0, usuarios_grupo_A)
+
+visitas_grupo_B <- rep(0, usuarios_grupo_B)
+registros_grupo_B <- rep(0, usuarios_grupo_B)
+inscripciones_grupo_B <- rep(0, usuarios_grupo_B)
+
+# Simulación para el grupo A
+for (usuario in 1:usuarios_grupo_A) {
+  if (runif(1) <= probabilidad_visita_sitio) {
+    visitas_grupo_A[usuario] <- 1
+    if (runif(1) <= probabilidad_registro) {
+      registros_grupo_A[usuario] <- 1
+      if (runif(1) <= probabilidad_inscripcion) {
+        inscripciones_grupo_A[usuario] <- 1
+      }
+    }
+  }
+}
+
+# Simulación para el grupo B (mismas probabilidades)
+for (usuario in 1:usuarios_grupo_B) {
+  if (runif(1) <= probabilidad_visita_sitio) {
+    visitas_grupo_B[usuario] <- 1
+    if (runif(1) <= probabilidad_registro) {
+      registros_grupo_B[usuario] <- 1
+      if (runif(1) <= probabilidad_inscripcion) {
+        inscripciones_grupo_B[usuario] <- 1
+      }
+    }
+  }
+}
+
+# Calcular estadísticas finales para ambos grupos
+total_visitas_grupo_A <- sum(visitas_grupo_A)
+total_registros_grupo_A <- sum(registros_grupo_A)
+total_inscripciones_grupo_A <- sum(inscripciones_grupo_A)
+
+total_visitas_grupo_B <- sum(visitas_grupo_B)
+total_registros_grupo_B <- sum(registros_grupo_B)
+total_inscripciones_grupo_B <- sum(inscripciones_grupo_B)
+
+ # Imprimir resultados
+cat("Grupo A:\n")
+cat("Número total de visitantes:", usuarios_grupo_A, "\n")
+cat("Número de visitantes que visitaron el sitio web:", total_visitas_grupo_A, "\n")
+cat("Número de visitantes que se registraron después de visitar el sitio:", total_registros_grupo_A, "\n")
+cat("Número de visitantes que se inscribieron después de registrarse:", total_inscripciones_grupo_A, "\n\n")
+
+cat("Grupo B:\n")
+cat("Número total de visitantes:", usuarios_grupo_B, "\n")
+cat("Número de visitantes que visitaron el sitio web:", total_visitas_grupo_B, "\n")
+cat("Número de visitantes que se registraron después de visitar el sitio:", total_registros_grupo_B, "\n")
+cat("Número de visitantes que se inscribieron después de registrarse:", total_inscripciones_grupo_B, "\n")
+
+
+
+```
+
+Qué grupo tiene una tasa de conversión superior de visitas a registro?? 
+Qué tipo de campaña van a utilizar? La A o la B?? No hay respuestas correctas. Argumenten con fuerza. 
+
+
+
+Intervalos de confianza. Vamos a ver esto en dos semanas, pero pueden ya tener una idea. 
+
+```{r}
+
+# Configuración de probabilidades
+probabilidad_visita_sitio <- 0.10
+probabilidad_registro <- 0.20
+probabilidad_inscripcion <- 0.10
+
+# Número de simulaciones
+simulaciones <- 1000
+
+# Inicializar vector para almacenar tasas de conversión
+tasas_conversion <- numeric(simulaciones)
+
+# Simulación de múltiples experimentos
+for (i in 1:simulaciones) {
+  # Inicializar contadores para cada etapa
+  visitas <- 0
+  registros <- 0
+  inscripciones <- 0
+  
+  # Simulación de un conjunto de visitantes
+  num_visitantes <- rpois(1, 100)  # Número de visitantes en esta simulación
+  
+  for (visitante in 1:num_visitantes) {
+    if (runif(1) <= probabilidad_visita_sitio) {
+      visitas <- visitas + 1
+      if (runif(1) <= probabilidad_registro) {
+        registros <- registros + 1
+        if (runif(1) <= probabilidad_inscripcion) {
+          inscripciones <- inscripciones + 1
+        }
+      }
+    }
+  }
+  
+  # Calcular la tasa de conversión en esta simulación
+  tasa_conversion <- inscripciones / visitas
+  
+  # Almacenar la tasa de conversión en el vector
+  tasas_conversion[i] <- tasa_conversion
+}
+
+# Calcular el intervalo de confianza (por ejemplo, al 95%) para las tasas de conversión
+conf_int <- quantile(tasas_conversion, c(0.025, 0.975))
+cat("Intervalo de confianza (95%): [", conf_int[1], ", ", conf_int[2], "]\n")
+
+
+```
+
+Límite Inferior del Intervalo: Este es el primer número que obtenemos al imprimir el intervalo de confianza. Representa el valor más bajo o mínimo que se espera que tenga la tasa de conversión con un nivel de confianza del 95%. En otras palabras, con un 95% de confianza, podemos afirmar que la tasa de conversión real será igual o mayor que este valor.
+
+Límite Superior del Intervalo: Este es el segundo número en el resultado. Representa el valor más alto o máximo que se espera que tenga la tasa de conversión con un nivel de confianza del 95% en nuestra campana. Con un 95% de confianza, podemos afirmar que la tasa de conversión real será igual o menor que este valor.
+
+
+
+Probabilidad binomial
+
+```{r}
+
+# Datos actuales de la campaña (tasas de conversión)
+probabilidad_visita_sitio <- 0.802
+probabilidad_registro <- 0.297
+probabilidad_inscripcion <- 0.197
+
+# Función para calcular el número de conversiones esperadas
+calcular_conversiones_esperadas <- function(probabilidad, total_visitas) {
+  return(probabilidad * total_visitas)
+}
+
+# Número actual de visitantes
+total_visitas <- 2000
+
+# Calcular conversiones esperadas en cada etapa
+conversiones_esperadas_registro <- calcular_conversiones_esperadas(probabilidad_registro, total_visitas)
+conversiones_esperadas_inscripcion <- calcular_conversiones_esperadas(probabilidad_inscripcion, total_visitas)
+
+# Calcular métricas actuales
+cat("Tasa de conversión de visita a registro actual:", probabilidad_registro, "\n")
+cat("Conversiones esperadas de visita a registro:", conversiones_esperadas_registro, "\n")
+cat("Tasa de conversión de registro a inscripción actual:", probabilidad_inscripcion, "\n")
+cat("Conversiones esperadas de registro a inscripción:", conversiones_esperadas_inscripcion, "\n")
+
+# Planteamiento de preguntas para la optimización
+cat("Preguntas para la optimización:\n")
+cat("1. ¿Cómo podemos aumentar la tasa de conversión de visita a registro?\n")
+cat("2. ¿Qué estrategias podríamos implementar para mejorar la tasa de conversión de registro a inscripción?\n")
+
+
+```
+
+
+
+Como aumentamos la tasa de conversion 
+
+```{r}
+
+# Configuración de la prueba A/B
+tasa_conversion_actual <- probabilidad_registro
+tasa_conversion_nueva <- 0.40  # Supongamos que estamos probando una nueva versión de la página de registro
+
+# Tamaño de la muestra para la prueba
+tamaño_muestra <- 1000  # Número de visitantes que verán cada versión
+
+# Simulación de la prueba A/B
+conversiones_actual <- rbinom(tamaño_muestra, size = 1, prob = tasa_conversion_actual)
+conversiones_nueva <- rbinom(tamaño_muestra, size = 1, prob = tasa_conversion_nueva)
+
+# Comparación de tasas de conversión
+tasa_conversion_actual <- mean(conversiones_actual)
+tasa_conversion_nueva <- mean(conversiones_nueva)
+
+# Resultados de la prueba A/B
+cat("Tasa de conversión actual:", tasa_conversion_actual, "\n")
+cat("Tasa de conversión con la versión nueva:", tasa_conversion_nueva, "\n")
+
+# Análisis de resultados y toma de decisiones
+if (tasa_conversion_nueva > tasa_conversion_actual) {
+  cat("La versión nueva de la página de registro es mejor. Implementarla.\n")
+} else {
+  cat("La versión actual es igual o mejor. No es necesario cambiarla por ahora.\n")
+}
+
+```
+
+
+
+Estrategias
+
+```{r}
+
+# Configuración de la estrategia de incentivos
+probabilidad_registro_actual <- probabilidad_registro
+probabilidad_registro_con_incentivo <- 0.4  # Supongamos que se está probando una estrategia de incentivo
+
+# Tamaño de la muestra para la prueba
+tamaño_muestra_registro <- 1000  # Número de usuarios registrados
+
+# Simulación de la estrategia de incentivos
+conversiones_registro_actual <- rbinom(tamaño_muestra_registro, size = 1, prob = probabilidad_registro_actual)
+conversiones_registro_con_incentivo <- rbinom(tamaño_muestra_registro, size = 1, prob = probabilidad_registro_con_incentivo)
+
+# Comparación de tasas de conversión
+tasa_conversion_actual <- mean(conversiones_registro_actual)
+tasa_conversion_con_incentivo <- mean(conversiones_registro_con_incentivo)
+
+# Resultados de la estrategia de incentivos
+cat("Tasa de conversión actual de registro a inscripción:", tasa_conversion_actual, "\n")
+cat("Tasa de conversión con la estrategia de incentivo:", tasa_conversion_con_incentivo, "\n")
+
+# Análisis de resultados y toma de decisiones
+if (tasa_conversion_con_incentivo > tasa_conversion_actual) {
+  cat("La estrategia de incentivos mejora la tasa de conversión. Implementarla.\n")
+} else {
+  cat("La estrategia actual es igual o mejor. Evaluar otras estrategias si es necesario.\n")
+}
+
+```
+
+
+
+Machine Learning (Esto es algo extra, para que vean la maravilla de nuestro programa)
+
+```{r}
+
+# Cargar la librería necesaria para el modelo de regresión logística
+library(glmnet)
+
+# Crear un conjunto de datos ficticio con variables predictoras (demográficas y de comportamiento)
+set.seed(123)  # Para reproducibilidad
+datos <- data.frame(
+  edad = rnorm(1000, mean = 25, sd = 5),  # Edad simulada
+  genero = factor(sample(c("Masculino", "Femenino"), 1000, replace = TRUE)),  # Género simulado
+  visitas_previas = rpois(1000, lambda = 10),  # Visitas previas al sitio web simuladas
+  tiempo_en_sitio = rnorm(1000, mean = 20, sd = 5)  # Tiempo en el sitio web simulado en minutos
+)
+
+# Simular la variable objetivo (inscripción) basada en probabilidades
+probabilidad_inscripcion <- 0.15  # Probabilidad de inscripción
+datos$inscripcion <- rbinom(1000, size = 1, prob = probabilidad_inscripcion)
+
+# Dividir el conjunto de datos en entrenamiento y prueba
+set.seed(456)  # Para reproducibilidad
+indice_entrenamiento <- sample(1:nrow(datos), nrow(datos) * 0.7)  # 70% para entrenamiento
+datos_entrenamiento <- datos[indice_entrenamiento, ]
+datos_prueba <- datos[-indice_entrenamiento, ]
+
+# Entrenar un modelo de regresión logística
+modelo <- glm(inscripcion ~ edad + genero + visitas_previas + tiempo_en_sitio, data = datos_entrenamiento, family = "binomial")
+
+# Realizar predicciones en el conjunto de prueba
+predicciones <- predict(modelo, newdata = datos_prueba, type = "response")
+
+# Calcular el porcentaje de acierto
+umbral <- 0.5  # Umbral para clasificar como inscripción
+predicciones_clasificadas <- ifelse(predicciones > umbral, 1, 0)
+precision <- mean(predicciones_clasificadas == datos_prueba$inscripcion)
+
+cat("Porcentaje de acierto en el conjunto de prueba:", precision * 100, "%\n")
+
+
+```
+
+El porcentaje de acierto impreso al final del código representa cuántas de las predicciones hechas por el modelo coinciden con los valores reales en el conjunto de prueba. Es una métrica comúnmente utilizada para evaluar la calidad de un modelo de clasificación. El resultado puede variar en cada ejecución debido a la aleatoriedad en la generación de datos y la división de datos en entrenamiento y prueba, pero proporciona una estimación de cuán bien el modelo es capaz de predecir la inscripción en función de las características proporcionadas.
+
+
+Ejemplo con la Cooperativa de Ahorro y Crédito de Mushuc Runa: 
+
+```{r}
+
+set.seed(123)  
+datos_MushucRuna <- data.frame(
+  Edad = sample(18:60, 1000, replace = TRUE),  # Edades de los miembros
+  Retiro_Efectivo = rbinom(1000, size = 1, prob = 0.3),  # Probabilidad de retiro de efectivo
+  Deposito_Efectivo = rbinom(1000, size = 1, prob = 0.4),  # Probabilidad de depósito de efectivo
+  Transferencia_Bancaria = rbinom(1000, size = 1, prob = 0.2)  # Probabilidad de transferencia bancaria
+)
+
+print(datos_MushucRuna)
+
+```
+
+
+
+# Preguntas
+
+# 1. Promedio y Mediana de Edades
+
+```{r}
+
+
+
+```
+
+
+# 2. Probabilidad de Transacciones
+
+```{r}
+
+# Calcula las probabilidades de retiro, depósito y transferencia
+prob_retiro <- prop.table(table(datos_MushucRuna$Retiro_Efectivo))
+prob_deposito <- prop.table(table(datos_MushucRuna$Deposito_Efectivo))
+prob_transferencia <- prop.table(table(datos_MushucRuna$Transferencia_Bancaria))
+
+# Imprime las probabilidades
+print("Probabilidad de Retiro de Efectivo:")
+print(prob_retiro)
+
+print("Probabilidad de Depósito de Efectivo:")
+print(prob_deposito)
+
+print("Probabilidad de Transferencia Bancaria:")
+print(prob_transferencia)
+
+```
+
+# 3. Análisis de Probabilidad Conjunta (De nada)
+
+```{r}
+
+prob_retiro_deposito <- mean(datos_MushucRuna$Retiro_Efectivo & datos_MushucRuna$Deposito_Efectivo)
+prob_retiro_o_transferencia <- mean(datos_MushucRuna$Retiro_Efectivo | datos_MushucRuna$Transferencia_Bancaria)
+
+```
+
+# 4. Correlación entre Edad y Transacciones 
+
+```{r}
+
+```
+
+
+# 5. Visualización de Datos: Hagan gráficos de barras para las probabilidades de transacciones
+
+```{r}
+
+
+```
+
+
+# 6. Inferencias de Probabilidad 
+# Supongan que se selecciona aleatoriamente un miembro de edad entre 20 y 40 años
+
+```{r}
+
+prob_edad_20_40 <- mean(datos_MushucRuna$Edad >= 20 & datos_MushucRuna$Edad <= 40)
+prob_retiro_20_40 <- mean(datos_MushucRuna$Edad >= 20 & datos_MushucRuna$Edad <= 40 & datos_MushucRuna$Retiro_Efectivo)
+print(prob_retiro_20_40)
+
+```
+
+
+# 7 
+
+Calculen la probabilidad de retiro, depósito y transferencia por grupo de edad. Es decir calculen la probabilidad de los tres tipos de transacción, dividido por edades: 10-20, 20-30, 30-40, 40-50. 
+
+
+
+
+
+
+
+
+
+
+

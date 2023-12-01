@@ -1,0 +1,300 @@
+---
+title: "Laboratorio 6"
+author: "Jose Emilio"
+date: "2023-11-26"
+output: html_document
+---
+
+
+Voy a crear una base de datos sobre fútbol
+
+```{r setup, include=FALSE}
+
+
+set.seed(123)
+n <- 200
+edad <- sample(18:35, n, replace = TRUE)
+habilidad <- sample(50:99, n, replace = TRUE)
+experiencia <- sample(1:15, n, replace = TRUE)
+posicion <- sample(c("Delantero", "Centrocampista", "Defensa", "Portero"), n, replace = TRUE)
+salario <- habilidad * experiencia * 100 + rnorm(n, mean = 0, sd = 20000)
+datos_futbol <- data.frame(Edad = edad, Habilidad = habilidad, Experiencia = experiencia, Posicion = posicion, Salario = salario)
+
+```
+
+
+Impriman la base de datos: 
+
+```{r}
+
+print(datos_futbol)
+
+```
+
+
+Exploren la base de datos: 
+
+```{r}
+
+
+```
+
+
+Recuerdan que hicimos regresiones lineales simples??? Ahora vamos a hacer regresiones lineales con más de una variable. Es decir, podemos explicar nuestra VD con algunas variables. Eso es lo que se suele hacer en los modelos más complejos, ya que no hay una sola variable que pueda afectar de manera directa a la VD. 
+
+Miren este ejemplo: 
+
+```{r}
+
+
+modelo_FUT <- lm(Salario ~ Edad + Habilidad + Experiencia, data = datos_futbol)
+summary(modelo_FUT)
+
+```
+
+Pueden interpretar el modelo??? háganlo abajo: 
+
+
+#Escriban sus respuestas aquí. 
+
+
+
+Ahora, voy a hacer un modelo con una interacción como las que vimos en clase hace un rato. Pueden interpretarlo abajo también. 
+
+```{r}
+
+
+modelo_interaccion <- lm(Salario ~ Edad * Experiencia, data = datos_futbol)
+summary(modelo_interaccion)
+
+
+```
+
+#Interpretar el modelo aquí. 
+
+
+Ahora, voy a hacer una base de datos más grande para que tenga muchas variables. Tienen que seleccionar sus propias variables dependientes a independientes y realizar 5 modelos diferentes. Cada modelo tiene que tener su interpretación al final, con un párrafo. 
+
+```{r}
+
+set.seed(1234)
+
+partidos_jugados <- sample(5:40, n, replace = TRUE) 
+tarjetas_amarillas <- sample(0:10, n, replace = TRUE) 
+tarjetas_rojas <- sample(0:3, n, replace = TRUE)  
+lesiones_graves <- sample(0:1, n, replace = TRUE)  
+minutos_jugados <- sample(800:5000, n, replace = TRUE)  
+edad_debut <- sample(16:22, n, replace = TRUE)  
+lesiones_previas <- sample(0:3, n, replace = TRUE)  
+goles_por_partido <- rnorm(n, mean = 0.3, sd = 0.1) 
+
+datos_futbol <- cbind(datos_futbol, 
+                      Partidos_Jugados = partidos_jugados,
+                      Tarjetas_Amarillas = tarjetas_amarillas,
+                      Tarjetas_Rojas = tarjetas_rojas,
+                      Lesiones_Graves = lesiones_graves,
+                      Minutos_Jugados = minutos_jugados,
+                      Edad_Debut = edad_debut,
+                      Lesiones_Previas = lesiones_previas,
+                      Goles_Por_Partido = goles_por_partido)
+
+set.seed(5678)
+
+tiros_al_arco <- sample(5:50, n, replace = TRUE)  
+pases_exactos <- sample(80:900, n, replace = TRUE)  
+pases_fallidos <- sample(5:100, n, replace = TRUE)  
+distancia_recorrida_km <- sample(5:15, n, replace = TRUE)  
+altura_cm <- sample(160:200, n, replace = TRUE)  
+peso_kg <- sample(60:90, n, replace = TRUE)  
+salto_vertical_cm <- sample(40:80, n, replace = TRUE) 
+habilidad_regate <- sample(60:99, n, replace = TRUE)  
+regates_exitosos <- sample(5:100, n, replace = TRUE)  
+edad_primer_equipo <- sample(16:20, n, replace = TRUE)  
+lesiones_graves_temporada_pasada <- sample(0:1, n, replace = TRUE)  
+experiencia_internacional <- sample(0:5, n, replace = TRUE)  
+salario_patrocinios <- rnorm(n, mean = 500000, sd = 100000)  
+duracion_contrato_anios <- sample(1:5, n, replace = TRUE)  
+camiseta_vendida <- sample(5000:50000, n, replace = TRUE)  
+edad_retiro <- sample(33:40, n, replace = TRUE)  
+habilidad_cabeceo <- sample(60:99, n, replace = TRUE)  
+pases_gol <- sample(0:10, n, replace = TRUE)  
+pasaporte_comunitario <- sample(0:1, n, replace = TRUE) 
+habilidad_defensa <- sample(60:99, n, replace = TRUE)  
+titulos_ganados <- sample(0:5, n, replace = TRUE)  
+tatuajes <- sample(0:20, n, replace = TRUE)  
+patrocinio_zapatos <- rnorm(n, mean = 200000, sd = 50000)  
+expulsion_partidos <- sample(0:3, n, replace = TRUE) 
+habilidad_fuerza <- sample(60:99, n, replace = TRUE)  
+lesiones_entrenamiento <- sample(0:5, n, replace = TRUE)  
+penales_anotados <- sample(0:5, n, replace = TRUE) 
+
+
+datos_futbol <- cbind(datos_futbol, 
+                      Tiros_Al_Arco = tiros_al_arco,
+                      Pases_Exactos = pases_exactos,
+                      Pases_Fallidos = pases_fallidos,
+                      Distancia_Recorrida_Km = distancia_recorrida_km,
+                      Altura_cm = altura_cm,
+                      Peso_kg = peso_kg,
+                      Salto_Vertical_cm = salto_vertical_cm,
+                      Habilidad_Regate = habilidad_regate,
+                      Regates_Exitosos = regates_exitosos,
+                      Edad_Primer_Equipo = edad_primer_equipo,
+                      Lesiones_Graves_Temporada_Pasada = lesiones_graves_temporada_pasada,
+                      Experiencia_Internacional = experiencia_internacional,
+                      Salario_Patrocinios = salario_patrocinios,
+                      Duracion_Contrato_Anios = duracion_contrato_anios,
+                      Camiseta_Vendida = camiseta_vendida,
+                      Edad_Retiro = edad_retiro,
+                      Habilidad_Cabeceo = habilidad_cabeceo,
+                      Pases_Gol = pases_gol,
+                      Pasaporte_Comunitario = pasaporte_comunitario,
+                      Habilidad_Defensa = habilidad_defensa,
+                      Titulos_Ganados = titulos_ganados,
+                      Tatuajes = tatuajes,
+                      Patrocinio_Zapatos = patrocinio_zapatos,
+                      Expulsion_Partidos = expulsion_partidos,
+                      Habilidad_Fuerza = habilidad_fuerza,
+                      Lesiones_Entrenamiento = lesiones_entrenamiento,
+                      Penales_Anotados = penales_anotados)
+
+
+print(datos_futbol)
+
+
+```
+
+
+```{r}
+library(caret)
+
+# Definir el control de entrenamiento (validación cruzada)
+control <- trainControl(method = "cv", number = 10)  # 10-fold CV
+
+# Entrenar un modelo de regresión lasso (glmnet) usando train
+modelo_lasso <- train(
+  Salario ~ .,  # Todas las variables predictoras
+  data = datos_futbol,  # Tu conjunto de datos
+  method = "glmnet",  # Regresión lasso
+  trControl = control,
+  tuneLength = 10  # Ajusta la cantidad de valores lambda a probar
+)
+
+# Mostrar resultados del modelo
+print(modelo_lasso)
+
+# Obtener las variables seleccionadas por el modelo
+variables_seleccionadas <- varImp(modelo_lasso)$importance
+print(variables_seleccionadas)
+
+```
+
+
+
+```{r}
+
+ModeloPer <- lm(Salario ~ Habilidad_Fuerza + Habilidad + Habilidad_Defensa + Pasaporte_Comunitario, data = datos_futbol)
+
+summary(ModeloPer)
+
+
+```
+
+```{r}
+
+library(caret)
+
+# Definir control de entrenamiento (validación cruzada)
+control <- trainControl(method = "cv", number = 10)  # 10-fold CV
+
+# Entrenar un modelo de Random Forest
+modelo_random_forest <- train(
+  Salario ~ .,  # Utiliza todas las variables predictoras
+  data = datos_futbol,
+  method = "rf",  # Modelo de Random Forest
+  trControl = control
+)
+
+# Mostrar resultados del modelo
+print(modelo_random_forest)
+
+
+
+```
+
+
+
+
+
+
+
+
+
+Hagan los cinco modelos usando interacciones y las variables que consideren. Por cierto, si se animan, les dejo código para un gráfico ejemplo, por si se animan a ponerlos en sus modelos. 
+
+```{r}
+
+library(plotly)
+
+modelo_multiple_FUTBOL <- lm(Salario ~ Habilidad_Regate + Altura_cm + Peso_kg, data = datos_futbol)
+
+predicciones <- predict(modelo_multiple_FUTBOL)
+
+plot_ly(data = datos_futbol, x = ~Habilidad_Regate, y = ~Altura_cm, z = ~Peso_kg, 
+        type = 'scatter3d', mode = 'markers', marker = list(color = predicciones, colorscale = 'Viridis'),
+        text = ~paste("Salario: $", Salario, "<br>")) %>%
+  layout(scene = list(xaxis = list(title = 'Habilidad Regate'),
+                      yaxis = list(title = 'Altura (cm)'),
+                      zaxis = list(title = 'Peso (kg)'),
+                      aspectmode = "cube"),
+         margin = list(l = 0, r = 0, b = 0, t = 0))
+
+
+
+```
+
+
+Hagan sus modelos aquí abajo. Qué me pueden contar de nuevo??? 
+
+
+```{r}
+
+variable.names(datos_futbol)
+
+
+
+```
+
+```{r}
+
+
+ print(datos_futbol$Habilidad_Fuerza)
+modeFut <- lm(habilidad_fuerza ~ Peso_kg + Altura_cm , data = datos_futbol)
+
+summary(modeFut)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
