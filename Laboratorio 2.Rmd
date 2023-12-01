@@ -1,0 +1,273 @@
+---
+title: "Laboratorio 2"
+author: "Su nombre"
+date: "Fecha"
+output: html_document
+---
+
+
+# En este Laboratorio, vamos a hacer un ejercicio muy sencillo para poder visualizar cuatro conclusiones en una base de datos. Les voy a dar una base de datos para que puedan usar. 
+
+
+# CALENTAMIENTO 
+
+## Base de datos 
+
+```{r}
+
+Marketing_influencia <- read.csv("https://query.data.world/s/5tg5zrmij4velxjjaoah6v637yzuwh?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+
+print(Marketing_influencia)
+
+```
+
+
+
+## De qué trata la base?
+
+```{r}
+
+# Visualizar las primeras filas de la base de datos
+head(Marketing_influencia)
+
+# Resumen estadístico básico de las variables numéricas
+summary(Marketing_influencia)
+
+# Información sobre la estructura de la base de datos
+str(Marketing_influencia)
+
+# Nombres de las columnas
+colnames(Marketing_influencia)
+
+```
+
+
+## Transformar variables (esto les va a servir en el futuro)
+
+```{r}
+
+# Crear una nueva variable numérica basada en 'Answer'
+Marketing_influencia$NumericAnswer <- ifelse(Marketing_influencia$Answer == "Facebook", 1,
+                                            ifelse(Marketing_influencia$Answer == "Instagram", 2,
+                                                   ifelse(Marketing_influencia$Answer == "Snapchat", 3,
+                                                          ifelse(Marketing_influencia$Answer == "Twitter", 4, 0))))
+
+
+
+```
+
+
+#Estadística Descriptiva (Hagan lo mismo que está en este Chunk, pero con otra variable. Les sugiero hacerlo con Count) Les toma un minuto. 
+
+```{r}
+
+# Tabla de frecuencia: Frecuencia y Porcentaje: Calcula la frecuencia absoluta y el porcentaje de cada categoría en la variable. Esto les puede ayudar a tener claro  cuántas veces aparece cada respuesta. 
+
+frequency_table <- table(Marketing_influencia$Answer)
+
+# Porcentaje de cada categoría
+percentage <- prop.table(frequency_table) * 100
+
+print(frequency_table)
+print(percentage)
+
+# Gráfico de barras: Les permite visualizar la distribución de las categorías. Esto proporciona una representación gráfica de la frecuencia de cada respuesta.
+
+barplot(frequency_table, main = "Distribución de Respuestas", xlab = "Respuesta", ylab = "Frecuencia")
+
+# Moda: Moda: les permite ver la categoría que ocurre con mayor frecuencia en la base. Es la respuesta más común.
+moda <- names(which.max(frequency_table))
+
+print(moda)
+
+# Tabla de contingencia: Como tenemos más de una variable categórica, podemos crear tablas de contingencia para mostrar cómo se distribuyen las respuestas en función de una con la otra.
+
+contingency_table <- table(Marketing_influencia$Answer, Marketing_influencia$Segment.Type)
+
+print(contingency_table)
+
+
+```
+
+## Sus estadísticas
+
+```{r}
+
+# Tabla frecuencia variable segment type
+frequency_table_Type <- table(Marketing_influencia$Segment.Type)
+
+# Porcentaje de cada categoría
+percentage_type <- prop.table(frequency_table_Type) * 100
+
+print(frequency_table_Type)
+print(percentage_type)
+
+mean(Marketing_influencia$Count)
+min()
+max()
+
+
+
+```
+
+
+
+## Estadistica Descriptiva Variable count. (Hagan lo mismo, con otra variable) 1 minuto. 
+
+
+```{r}
+
+# Importa la librería dplyr si aún no lo han hecho
+library(dplyr)
+
+# Utiliza la función factor() para convertir "Segment.Type" en un factor (Hagan lo mismo con otra variable)
+Marketing_influencia$Segment.Type <- factor(Marketing_influencia$Segment.Type)
+
+# Aplica codificación de etiquetas
+Marketing_influencia$Segment.Type_numeric <- as.numeric(Marketing_influencia$Segment.Type)
+
+
+# Gráfico de densidad
+density_plot <- density(Marketing_influencia$Segment.Type_numeric)
+plot(density_plot, main = "Gráfico de Densidad de Count", xlab = "Count", ylab = "Densidad")
+
+
+```
+
+# Su turno
+
+```{r}
+
+
+
+
+```
+
+
+
+## Obtener categories de la variable segment.Description
+
+```{r}
+
+# Obtener todas las categorías únicas en "Segment.Description"
+categorias_unicas <- unique(Marketing_influencia$Segment.Description)
+
+
+# Imprimir todas las categorías únicas
+print(categorias_unicas)
+
+```
+
+
+
+
+## Grafico con una de las categories (Filter y ggplot) MI EJEMPLO
+
+```{r}
+
+
+No_Feminist <- Marketing_influencia %>%
+  filter(Segment.Description == "you a feminist? No")
+
+print(No_Feminist)
+
+ggplot(No_Feminist, aes(x=Percentage, y=Count, color = Answer)) +
+  geom_point()
+
+```
+
+
+## Hagan lo mismo con otra categoria (PUEDEN ESCOGER LA QUE QUIERAN)
+
+```{r}
+
+
+
+
+```
+
+
+# Escriban dos conclusiones de su trabajo estadistico (un parrafo por cada una)
+
+1. 
+
+2. 
+
+
+
+# EJERCICIO 
+
+Vamos a imaginar que es su primer día de trabajo en este supermercado. Van a trabajar para el equipo de Marketing, que va a probar su conocimiento en análisis básico de datos con R para poder tener una idea de cómo van las ventas por segmento, género, y tipo de producto. Seguro que para ustedes no va a ser un problema ;)
+
+
+Lo primero que deben hacer, es pedir la base de datos: 
+
+Vayan a este lugar: https://www.kaggle.com/datasets/aungpyaeap/supermarket-sales?resource=download
+
+Descarguen la base en formato CSV, y tienen que ponerlo EN LA MISMA CARPETA EN LA QUE ESTÁ ESTE DOCUMENTO. ESO ES MUY IMPORTANTE. LUEGO, DEBEN REEMPLAZAR LO QUE ESTÁ DENTRO DEL CHUNK EN COLOR VERDE, CON LA UBICACIÓN DE LA BASE EN SU COMPUTADORA. PUEDEN PEDIRME AYUDA. 
+
+```{r}
+
+library(readr)
+supermarket_sales_Ejercicio <- read_csv("supermarket_sales - Sheet1.csv")
+print(supermarket_sales_Sheet1)
+
+```
+
+
+Ahora, deben conocer a fondo su base de datos. Pueden usar las funciones del ejercicio de calentamiento. 
+
+#Descripción de la base
+
+```{r}
+
+library(readr)
+supermarket_sales_Sheet1 <- read_csv("supermarket_sales - Sheet1.csv")
+print(supermarket_sales_Sheet1)
+
+
+```
+
+
+Ahora, pueden hacer estadística descriptiva de sus variables. Pueden escoger todas, o unas 3, o 1. Depende de su ánimo, o las conclusiones que quieran obtener. 
+
+# Descripcion
+
+```{r}
+
+
+```
+
+
+# Filtro y gráifco para las conclusiones: Pueden escoger cualquiera de las categorías en las variables cualitativas. Les recomiendo poner en los ejes Y y X, variables numéricas (corran mi ejemplo de abajo, luego lo pueden borrar, y pueden hacer uno propio)
+
+```{r}
+
+print(Health_beauty)
+
+Health_beauty <- supermarket_sales %>%
+  filter(Product.line == "Health and beauty")
+
+ggplot(Health_beauty, aes(x=Time, y=Rating, color = Customer.type)) +
+  geom_point()
+
+
+```
+
+
+Mis conclusiones son, que no hay ninguna relación entre el tipo de cliente y la fomra en la que se califica a la tienda. Yo creí, que los clientes que son miembros, van a poner mejores calificaciones a la tienda. Sin embargo, como vemos en el gráfico, los clientes miembros también dan bajas calificaciones a la tienda. Mi recomendación será, que la tienda tiene que tener un nuevo sistema de incentivos para los clientes miembros. No se puede tener las mismas calificaciones de quienes no son parte de la tienda como miembros. Otra conclusión, es que no importa la hora del día. El promedio de quejas sigue siendo exactamente igual. 
+
+Ustedes, qué opinan??? 
+
+
+Sus conclusiones: 
+
+1.- 
+
+
+2.- 
+
+
+
+
+
